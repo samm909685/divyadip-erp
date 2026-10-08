@@ -2,71 +2,150 @@ import {
   Menu,
   Bell,
   ChevronDown,
-  UserCircle,
+  UserRound,
 } from "lucide-react";
 
 function Header({ onMenuClick }) {
   return (
-    <header className="sticky top-0 z-30 flex h-[72px] items-center justify-between border-b border-gray-200 bg-white px-5 sm:px-6 lg:px-7">
-      {/* Left */}
-      <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-30 flex h-[74px] shrink-0 items-center justify-between border-b border-[#E8EAED] bg-white px-5 sm:px-7 lg:px-8">
+      {/* ==================================================
+          LEFT SIDE
+      ================================================== */}
+      <div className="flex min-w-0 items-center">
+        {/* Mobile / Tablet Menu */}
         <button
           type="button"
           onClick={onMenuClick}
-          className="rounded-lg p-2 text-gray-500 transition hover:bg-orange-50 hover:text-[#F26B00] lg:hidden"
-          aria-label="Open menu"
+          aria-label="Open navigation menu"
+          className="
+            mr-3
+            flex h-9 w-9
+            items-center justify-center
+            rounded-lg
+            text-[#5F6670]
+            transition-all duration-200
+            hover:bg-[#FFF4EA]
+            hover:text-[#F26B00]
+            lg:hidden
+          "
         >
-          <Menu size={21} />
+          <Menu size={21} strokeWidth={1.9} />
         </button>
 
-        <div>
-          <h1 className="text-[17px] font-semibold leading-tight text-gray-900">
-            Divyadip ERP
-          </h1>
+        {/* Page Context */}
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="hidden h-2 w-2 rounded-full bg-[#F26B00] sm:block" />
 
-          <p className="mt-0.5 text-[11px] text-gray-400">
+            <h1 className="truncate text-[16px] font-semibold tracking-[-0.01em] text-[#20252C] sm:text-[17px]">
+              Divyadip ERP
+            </h1>
+          </div>
+
+          <p className="mt-0.5 truncate text-[11px] font-medium text-[#9298A0] sm:text-[12px]">
             Enterprise Management System
           </p>
         </div>
       </div>
 
-      {/* Right */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      {/* ==================================================
+          RIGHT SIDE
+      ================================================== */}
+      <div className="flex shrink-0 items-center">
+
+        {/* Notification */}
         <button
           type="button"
-          className="relative rounded-lg p-2.5 text-gray-500 transition hover:bg-orange-50 hover:text-[#F26B00]"
           aria-label="Notifications"
+          className="
+            relative
+            flex h-10 w-10
+            items-center justify-center
+            rounded-lg
+            text-[#68707A]
+            transition-all duration-200
+            hover:bg-[#FFF4EA]
+            hover:text-[#F26B00]
+          "
         >
-          <Bell size={19} strokeWidth={1.9} />
-
-          <span className="absolute right-[7px] top-[7px] h-1.5 w-1.5 rounded-full bg-[#F26B00]" />
-        </button>
-
-        <div className="h-7 w-px bg-gray-200" />
-
-        <button
-          type="button"
-          className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition hover:bg-gray-50"
-        >
-          <UserCircle
-            size={30}
-            strokeWidth={1.6}
-            className="text-gray-500"
+          <Bell
+            size={19}
+            strokeWidth={1.9}
           />
 
-          <div className="hidden text-left sm:block">
-            <p className="text-[13px] font-semibold leading-tight text-gray-800">
+          {/* Notification dot */}
+          <span
+            className="
+              absolute
+              right-[9px]
+              top-[8px]
+              h-[6px]
+              w-[6px]
+              rounded-full
+              border-[1.5px]
+              border-white
+              bg-[#F26B00]
+            "
+          />
+        </button>
+
+        {/* Vertical divider */}
+        <div className="mx-3 h-8 w-px bg-[#E8EAED] sm:mx-4" />
+
+        {/* ==================================================
+            ADMIN PROFILE
+        ================================================== */}
+        <button
+          type="button"
+          className="
+            group
+            flex items-center
+            rounded-xl
+            px-2 py-1.5
+            text-left
+            transition-all duration-200
+            hover:bg-[#FAFAFA]
+          "
+        >
+          {/* Avatar */}
+          <span
+            className="
+              flex h-9 w-9
+              shrink-0
+              items-center justify-center
+              rounded-[10px]
+              border border-[#FFE0C6]
+              bg-[#FFF3E8]
+              text-[#F26B00]
+            "
+          >
+            <UserRound
+              size={19}
+              strokeWidth={1.8}
+            />
+          </span>
+
+          {/* User Information */}
+          <span className="ml-2.5 hidden min-w-0 sm:block">
+            <span className="block truncate text-[13px] font-semibold leading-tight text-[#252A31]">
               Administrator
-            </p>
+            </span>
 
-            <p className="mt-0.5 text-[10px] text-gray-400">
-              Admin
-            </p>
-          </div>
+            <span className="mt-0.5 block text-[10px] font-medium text-[#9298A0]">
+              System Admin
+            </span>
+          </span>
 
+          {/* Dropdown */}
           <ChevronDown
             size={15}
-            className="hidden text-gray-400 sm:block"
+            strokeWidth={1.8}
+            className="
+              ml-2
+              text-[#9298A0]
+              transition-transform duration-200
+              group-hover:text-[#F26B00]
+            "
           />
         </button>
       </div>

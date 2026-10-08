@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   LayoutDashboard,
   Package,
@@ -7,321 +8,245 @@ import {
   Settings,
   Headphones,
   LogOut,
-  ChevronRight,
   UserRound,
   X,
 } from "lucide-react";
 
 import divyadipLogo from "../../assets/images/divyadip-logo.jpeg";
 
-function Sidebar({ isOpen, onClose }) {
-  const mainMenu = [
-    {
-      label: "Dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      label: "Stock Details",
-      icon: Package,
-    },
-    {
-      label: "Challan",
-      icon: FileText,
-    },
-    {
-      label: "GST Billing",
-      icon: ReceiptText,
-    },
-    {
-      label: "Reports",
-      icon: BarChart3,
-    },
-    {
-      label: "Settings",
-      icon: Settings,
-    },
-  ];
+/* ------------------------------------------------------------------
+   Navigation config (kept outside the component so it isn't
+   re-created on every render)
+------------------------------------------------------------------ */
+const MAIN_MENU = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "stock", label: "Stock details", icon: Package },
+  { id: "challan", label: "Challan", icon: FileText },
+  { id: "gst-billing", label: "GST billing", icon: ReceiptText },
+  { id: "reports", label: "Reports", icon: BarChart3 },
+  { id: "settings", label: "Settings", icon: Settings },
+];
+
+const SYSTEM_MENU = [
+  { id: "help", label: "Help & support", icon: Headphones },
+];
+
+/* ------------------------------------------------------------------
+   Single navigation row
+------------------------------------------------------------------ */
+function NavItem({ item, active, onSelect }) {
+  const Icon = item.icon;
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(item.id)}
+      aria-current={active ? "page" : undefined}
+      className={`
+        group relative flex h-11 w-full items-center gap-3
+        rounded-xl px-3 text-left text-[14px]
+        outline-none transition-colors duration-150
+        focus-visible:ring-2 focus-visible:ring-[#F26B00]/40
+        ${
+          active
+            ? "bg-[#FFF1E5] font-semibold text-[#C95500]"
+            : "font-medium text-[#3A414B] hover:bg-[#F5F6F8] hover:text-[#15191F]"
+        }
+      `}
+    >
+      {/* Active indicator bar */}
+      <span
+        aria-hidden="true"
+        className={`
+          absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2
+          rounded-r-full bg-[#F26B00]
+          transition-opacity duration-150
+          ${active ? "opacity-100" : "opacity-0"}
+        `}
+      />
+
+      <Icon
+        size={19}
+        strokeWidth={active ? 2.2 : 1.8}
+        className={`
+          shrink-0 transition-colors duration-150
+          ${active ? "text-[#F26B00]" : "text-[#6B7480] group-hover:text-[#3A414B]"}
+        `}
+      />
+
+      <span className="truncate">{item.label}</span>
+    </button>
+  );
+}
+
+/* ------------------------------------------------------------------
+   Section heading
+------------------------------------------------------------------ */
+function SectionLabel({ children }) {
+  return (
+    <p className="mb-2 px-3 text-[12px] font-semibold text-[#8A919B]">
+      {children}
+    </p>
+  );
+}
+
+/* ------------------------------------------------------------------
+   Sidebar
+------------------------------------------------------------------ */
+function Sidebar({
+  isOpen = false,
+  onClose = () => {},
+  activeItem = "dashboard",
+  onNavigate = () => {},
+  onLogout = () => {},
+  user = { name: "Administrator", role: "System admin" },
+}) {
+  // Close on Escape + lock page scroll while the mobile drawer is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  // Navigate, then close the drawer on mobile
+  const handleSelect = (id) => {
+    onNavigate(id);
+    onClose();
+  };
 
   return (
     <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-[#162033]/55 backdrop-blur-[3px] lg:hidden"
-          onClick={onClose}
-        />
-      )}
-
-      {/* ================= SIDEBAR ================= */}
-      <aside
+      {/* ---------- Mobile backdrop ---------- */}
+      <div
+        onClick={onClose}
+        aria-hidden="true"
         className={`
-          fixed left-0 top-0 z-50
-          flex h-screen w-[408px] flex-col
-          bg-white
-          transition-transform duration-300 ease-out
-          lg:static lg:z-auto lg:translate-x-0
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+          fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-[2px]
+          transition-opacity duration-300 lg:hidden
+          ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}
+        `}
+      />
+
+      {/* ---------- Sidebar ---------- */}
+      <aside
+        aria-label="Main navigation"
+        className={`
+          fixed inset-y-0 left-0 z-50
+          flex h-screen w-[272px] shrink-0 flex-col
+          border-r border-[#E8EAED] bg-white
+          transition-[transform,visibility] duration-300 ease-in-out
+
+          lg:sticky lg:top-0 lg:z-30 lg:translate-x-0 lg:visible
+
+          ${isOpen ? "visible translate-x-0 shadow-2xl lg:shadow-none" : "invisible -translate-x-full"}
         `}
       >
-        {/* ================= LOGO ================= */}
-        <div className="relative flex h-[184px] shrink-0 items-center justify-center">
+        {/* ===== Brand ===== */}
+        <header className="relative flex shrink-0 flex-col items-center border-b border-[#EEF0F2] px-6 pb-5 pt-7">
           <button
             type="button"
             onClick={onClose}
             aria-label="Close sidebar"
             className="
-              absolute right-5 top-5
-              flex h-9 w-9 items-center justify-center
-              rounded-full
-              text-[#64748B]
-              hover:bg-[#FFF4EA]
-              hover:text-[#F26B00]
+              absolute right-3 top-3 flex h-9 w-9 items-center justify-center
+              rounded-lg text-[#6B7480] outline-none transition-colors
+              hover:bg-[#F5F6F8] hover:text-[#15191F]
+              focus-visible:ring-2 focus-visible:ring-[#F26B00]/40
               lg:hidden
             "
           >
-            <X size={22} />
+            <X size={19} />
           </button>
 
-          <div className="flex flex-col items-center">
-            {/* Logo image */}
-            <div className="relative h-[108px] w-[220px] overflow-hidden">
-              <img
-                src={divyadipLogo}
-                alt="Divyadip Enterprises"
-                className="
-                  absolute
-                  left-1/2
-                  top-1/2
-                  h-[175px]
-                  w-[235px]
-                  max-w-none
-                  -translate-x-1/2
-                  -translate-y-1/2
-                  object-contain
-                "
-              />
-            </div>
+          <div className="flex h-[64px] w-[168px] items-center justify-center">
+            <img
+              src={divyadipLogo}
+              alt="Divyadip Enterprises"
+              className="h-full w-full object-contain"
+            />
+          </div>
 
-            <span className="mt-[-2px] text-[13px] font-medium tracking-[0.22em] text-[#64748B]">
-              ERP SYSTEM
+          <span className="mt-3 rounded-full bg-[#FFF1E5] px-3 py-1 text-[11px] font-semibold text-[#C95500]">
+            ERP system
+          </span>
+        </header>
+
+        {/* ===== Navigation (scrolls independently) ===== */}
+        <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-3 py-5 [scrollbar-width:thin]">
+          <nav aria-label="Main menu">
+            <SectionLabel>Main menu</SectionLabel>
+            <ul className="space-y-1">
+              {MAIN_MENU.map((item) => (
+                <li key={item.id}>
+                  <NavItem
+                    item={item}
+                    active={item.id === activeItem}
+                    onSelect={handleSelect}
+                  />
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <nav aria-label="System" className="mt-auto border-t border-[#EEF0F2] pt-5">
+            <SectionLabel>System</SectionLabel>
+            <ul className="space-y-1">
+              {SYSTEM_MENU.map((item) => (
+                <li key={item.id}>
+                  <NavItem
+                    item={item}
+                    active={item.id === activeItem}
+                    onSelect={handleSelect}
+                  />
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+
+        {/* ===== User + logout ===== */}
+        <footer className="shrink-0 border-t border-[#EEF0F2] p-3">
+          <div className="flex items-center gap-3 rounded-xl bg-[#F7F8FA] p-2.5">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#FFE6D2] text-[#C95500]">
+              <UserRound size={19} strokeWidth={1.9} />
             </span>
-          </div>
-        </div>
 
-        {/* ================= NAVIGATION ================= */}
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-          {/* Main Menu */}
-          <div className="px-12">
-            <p className="mb-4 text-[13px] font-bold uppercase tracking-[0.13em] text-[#64748B]">
-              Main Menu
-            </p>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[13px] font-semibold text-[#1E232A]">
+                {user.name}
+              </span>
+              <span className="block truncate text-[12px] text-[#7A818B]">
+                {user.role}
+              </span>
+            </span>
 
-            <nav className="space-y-[6px]">
-              {mainMenu.map((item) => {
-                const Icon = item.icon;
-                const active = item.label === "Dashboard";
-
-                return (
-                  <button
-                    key={item.label}
-                    type="button"
-                    className={`
-                      group flex h-[62px] w-full
-                      items-center
-                      rounded-[16px]
-                      px-[18px]
-                      text-left
-                      transition-all duration-200
-                      ${
-                        active
-                          ? `
-                            bg-gradient-to-r
-                            from-[#FF6900]
-                            to-[#FF7910]
-                            text-white
-                            shadow-[0_9px_22px_rgba(255,105,0,0.18)]
-                          `
-                          : `
-                            text-[#172033]
-                            hover:bg-[#FFF7F0]
-                            hover:text-[#F26B00]
-                          `
-                      }
-                    `}
-                  >
-                    {/* Icon */}
-                    <span
-                      className={`
-                        flex h-[38px] w-[38px]
-                        shrink-0 items-center justify-center
-                        ${
-                          active
-                            ? "text-white"
-                            : "text-[#172033] group-hover:text-[#F26B00]"
-                        }
-                      `}
-                    >
-                      <Icon
-                        size={25}
-                        strokeWidth={active ? 2.1 : 1.8}
-                      />
-                    </span>
-
-                    {/* Text */}
-                    <span className="ml-[18px] flex-1 text-[17px] font-medium">
-                      {item.label}
-                    </span>
-
-                    {/* Chevron */}
-                    <ChevronRight
-                      size={19}
-                      strokeWidth={1.9}
-                      className={`
-                        shrink-0
-                        ${
-                          active
-                            ? "text-white/75"
-                            : "text-[#8794A7] group-hover:text-[#F26B00]"
-                        }
-                      `}
-                    />
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* Divider */}
-          <div className="mx-12 my-[30px] h-px bg-[#E7EAF0]" />
-
-          {/* ================= SYSTEM ================= */}
-          <div className="px-12">
-            <p className="mb-4 text-[13px] font-bold uppercase tracking-[0.13em] text-[#64748B]">
-              System
-            </p>
-
-            <div className="space-y-[6px]">
-              {/* Help */}
-              <button
-                type="button"
-                className="
-                  group flex h-[62px] w-full
-                  items-center
-                  rounded-[16px]
-                  px-[18px]
-                  text-left
-                  text-[#172033]
-                  transition-all duration-200
-                  hover:bg-[#FFF7F0]
-                  hover:text-[#F26B00]
-                "
-              >
-                <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center">
-                  <Headphones
-                    size={25}
-                    strokeWidth={1.8}
-                  />
-                </span>
-
-                <span className="ml-[18px] flex-1 text-[17px] font-medium">
-                  Help & Support
-                </span>
-
-                <ChevronRight
-                  size={19}
-                  strokeWidth={1.9}
-                  className="text-[#8794A7] group-hover:text-[#F26B00]"
-                />
-              </button>
-
-              {/* Logout */}
-              <button
-                type="button"
-                className="
-                  group flex h-[62px] w-full
-                  items-center
-                  rounded-[16px]
-                  px-[18px]
-                  text-left
-                  text-[#172033]
-                  transition-all duration-200
-                  hover:bg-red-50
-                  hover:text-red-600
-                "
-              >
-                <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center">
-                  <LogOut
-                    size={25}
-                    strokeWidth={1.8}
-                  />
-                </span>
-
-                <span className="ml-[18px] flex-1 text-[17px] font-medium">
-                  Logout
-                </span>
-
-                <ChevronRight
-                  size={19}
-                  strokeWidth={1.9}
-                  className="text-[#8794A7] group-hover:text-red-500"
-                />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* ================= ADMIN CARD ================= */}
-        <div className="shrink-0 px-12 pb-6 pt-4">
-          <button
-            type="button"
-            className="
-              flex h-[88px] w-full
-              items-center
-              rounded-[17px]
-              border border-[#E6EAF0]
-              bg-white
-              px-4
-              text-left
-              shadow-[0_2px_8px_rgba(15,23,42,0.025)]
-              transition-all duration-200
-              hover:border-[#FFD5B5]
-              hover:bg-[#FFFBF8]
-            "
-          >
-            {/* Avatar */}
-            <span
+            <button
+              type="button"
+              onClick={onLogout}
+              aria-label="Log out"
+              title="Log out"
               className="
-                flex h-[52px] w-[52px]
-                shrink-0 items-center justify-center
-                rounded-full
-                bg-[#FFF0DE]
-                text-[#F26B00]
+                flex h-9 w-9 shrink-0 items-center justify-center rounded-lg
+                text-[#6B7480] outline-none transition-colors
+                hover:bg-[#FDECEA] hover:text-[#D13B34]
+                focus-visible:ring-2 focus-visible:ring-[#D13B34]/40
               "
             >
-              <UserRound
-                size={27}
-                strokeWidth={1.8}
-              />
-            </span>
-
-            {/* User details */}
-            <span className="ml-4 min-w-0 flex-1">
-              <span className="block truncate text-[16px] font-semibold text-[#172033]">
-                Administrator
-              </span>
-
-              <span className="mt-1 block text-[13px] text-[#64748B]">
-                Admin
-              </span>
-            </span>
-
-            <ChevronRight
-              size={20}
-              strokeWidth={1.8}
-              className="text-[#8794A7]"
-            />
-          </button>
-        </div>
+              <LogOut size={18} strokeWidth={1.9} />
+            </button>
+          </div>
+        </footer>
       </aside>
     </>
   );
