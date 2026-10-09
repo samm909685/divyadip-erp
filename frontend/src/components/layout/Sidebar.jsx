@@ -1,447 +1,155 @@
+import { useState } from "react";
 import {
-  LayoutDashboard,
+  LayoutGrid,
   Package,
   FileText,
   ReceiptText,
-  BarChart3,
+  ChartNoAxesColumn,
   Settings,
   Headphones,
   LogOut,
-  UserRound,
-  X,
+  User,
+  ChevronRight,
 } from "lucide-react";
-
 import divyadipLogo from "../../assets/images/divyadip-logo.jpeg";
 
-const menu = [
-  {
-    title: "Dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Stock Details",
-    icon: Package,
-  },
-  {
-    title: "Challan",
-    icon: FileText,
-  },
-  {
-    title: "GST Billing",
-    icon: ReceiptText,
-  },
-  {
-    title: "Reports",
-    icon: BarChart3,
-  },
-  {
-    title: "Settings",
-    icon: Settings,
-  },
+const mainMenu = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutGrid },
+  { id: "stock", label: "Stock Details", icon: Package },
+  { id: "challan", label: "Challan", icon: FileText },
+  { id: "gst", label: "GST Billing", icon: ReceiptText },
+  { id: "reports", label: "Reports", icon: ChartNoAxesColumn },
+  { id: "settings", label: "Settings", icon: Settings },
 ];
 
-function Sidebar({ sidebarOpen, setSidebarOpen }) {
+const systemMenu = [
+  { id: "help", label: "Help & Support", icon: Headphones },
+  { id: "logout", label: "Logout", icon: LogOut },
+];
+
+/*
+  NOTE: spacing classes use the "!" (important) prefix so they still apply
+  even if your project has a global reset like `* { margin:0; padding:0 }`
+  in index.css / App.css (which overrides Tailwind v4 utilities).
+*/
+const Sidebar = ({
+  active: activeProp,
+  onNavigate,
+  onLogout,
+  userName = "Administrator",
+  userRole = "System Admin",
+}) => {
+  const [activeState, setActiveState] = useState("dashboard");
+  const active = activeProp ?? activeState;
+
+  const handleClick = (id) => {
+    if (id === "logout") return onLogout?.();
+    setActiveState(id);
+    onNavigate?.(id);
+  };
+
+  const itemBase =
+    "flex w-full items-center gap-4 !rounded-2xl !px-3.5 !py-3 text-left text-[17px] transition-all duration-200";
+
   return (
-    <>
-      {/* =====================================================
-          MOBILE OVERLAY
-      ====================================================== */}
-      {sidebarOpen && (
-        <div
-          onClick={() => setSidebarOpen(false)}
-          className="
-            fixed
-            inset-0
-            z-40
-            bg-black/40
-            lg:hidden
-          "
-        />
-      )}
-
-      {/* =====================================================
-          SIDEBAR
-      ====================================================== */}
-      <aside
-        className={`
-          fixed
-          top-0
-          left-0
-          z-50
-          h-screen
-          w-72
-          bg-white
-          text-[#252A31]
-          border-r
-          border-[#E8E9EB]
-          shadow-[2px_0_12px_rgba(15,23,42,0.03)]
-          transform
-          transition-transform
-          duration-300
-
-          ${
-            sidebarOpen
-              ? "translate-x-0"
-              : "-translate-x-full"
-          }
-
-          lg:translate-x-0
-          lg:z-30
-        `}
-      >
-
-        {/* ===================================================
-            BRAND HEADER
-        ==================================================== */}
-        <div
-          className="
-            flex
-            items-center
-            justify-between
-            px-8
-            py-8
-            border-b
-            border-[#ECEDEF]
-          "
-        >
-          <div className="w-full">
-
-            {/* Logo */}
-            <div className="flex items-center justify-center">
-              <img
-                src={divyadipLogo}
-                alt="Divyadip Enterprises"
-                className="
-                  h-[76px]
-                  w-[180px]
-                  object-contain
-                "
-              />
-            </div>
-
-            {/* ERP label */}
-            <div className="mt-3 flex items-center justify-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#F26B00]" />
-
-              <p
-                className="
-                  text-[10px]
-                  uppercase
-                  tracking-[0.3em]
-                  font-semibold
-                  text-[#7D838B]
-                "
-              >
-                ERP System
-              </p>
-
-              <span className="h-1.5 w-1.5 rounded-full bg-[#F26B00]" />
-            </div>
-
-          </div>
-
-          {/* Mobile close */}
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(false)}
-            className="
-              absolute
-              right-4
-              top-4
-              text-[#737982]
-              hover:text-[#F26B00]
-              lg:hidden
-            "
-            aria-label="Close sidebar"
-          >
-            <X size={22} />
-          </button>
+    <aside className="flex h-screen w-72 shrink-0 flex-col border-r border-slate-200/70 bg-white">
+      {/* Logo */}
+      <div className="flex flex-col items-center !px-6 !pb-5 !pt-8">
+        {/* wrapper + scale crops the grey border baked into the JPEG */}
+        <div className="w-44 overflow-hidden">
+          <img
+            src={divyadipLogo}
+            alt="Divyadip Enterprises"
+            className="block h-auto w-full scale-[1.08] object-contain"
+          />
         </div>
+        <div className="!mt-4 flex items-center gap-3">
+          <span className="h-2 w-2 rounded-full bg-orange-500" />
+          <span className="text-[13px] font-semibold tracking-[0.35em] text-slate-500">
+            ERP SYSTEM
+          </span>
+          <span className="h-2 w-2 rounded-full bg-orange-500" />
+        </div>
+      </div>
 
-        {/* ===================================================
-            NAVIGATION
-        ==================================================== */}
-        <nav
-          className="
-            mt-8
-            px-4
-            space-y-2
-          "
-        >
+      <div className="border-t border-slate-200/70" />
 
-          {/* MAIN MENU LABEL */}
-          <div className="px-5 pb-2">
-            <p
-              className="
-                text-[10px]
-                font-bold
-                uppercase
-                tracking-[0.16em]
-                text-[#969BA3]
-              "
-            >
-              Main Menu
-            </p>
-          </div>
+      {/* Nav */}
+      <nav className="flex flex-1 flex-col overflow-y-auto !px-2.5 !pt-5">
+        <p className="!mb-3 !px-4 text-xs font-semibold tracking-[0.25em] text-slate-500">
+          MAIN MENU
+        </p>
 
-          {/* MENU */}
-          {menu.map((item) => {
-            const Icon = item.icon;
-
-            const active =
-              item.title === "Dashboard";
-
+        <ul className="flex flex-col gap-1.5">
+          {mainMenu.map(({ id, label, icon: Icon }) => {
+            const isActive = active === id;
             return (
-              <button
-                key={item.title}
-                type="button"
-                className={`
-                  flex
-                  items-center
-                  gap-4
-                  w-full
-                  rounded-xl
-                  px-5
-                  py-4
-                  text-left
-                  transition-all
-                  duration-200
-
-                  ${
-                    active
-                      ? `
-                        bg-[#F26B00]
-                        text-white
-                        font-semibold
-                        shadow-[0_6px_16px_rgba(242,107,0,0.18)]
-                      `
-                      : `
-                        text-[#343941]
-                        hover:bg-[#FFF5EC]
-                        hover:text-[#F26B00]
-                      `
-                  }
-                `}
-              >
-
-                {/* Icon */}
-                <Icon
-                  size={20}
-                  strokeWidth={active ? 2.2 : 1.9}
-                  className="shrink-0"
-                />
-
-                {/* Text */}
-                <span className="flex-1 text-[14px]">
-                  {item.title}
-                </span>
-
-                {/* Active arrow */}
-                {active && (
-                  <span className="text-white/80 text-sm">
-                    ›
-                  </span>
-                )}
-              </button>
+              <li key={id}>
+                <button
+                  type="button"
+                  onClick={() => handleClick(id)}
+                  className={`${itemBase} ${
+                    isActive
+                      ? "bg-orange-600 font-medium text-white shadow-lg shadow-orange-500/30"
+                      : "text-slate-700 hover:bg-slate-50"
+                  }`}
+                >
+                  <Icon
+                    className={`h-6 w-6 shrink-0 ${
+                      isActive ? "text-white" : "text-slate-800"
+                    }`}
+                    strokeWidth={1.8}
+                  />
+                  <span className="flex-1">{label}</span>
+                  {isActive && (
+                    <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.2} />
+                  )}
+                </button>
+              </li>
             );
           })}
+        </ul>
 
-          {/* =================================================
-              SYSTEM DIVIDER
-          ================================================= */}
-          <div className="py-3">
-            <div className="h-px bg-[#ECEDEF]" />
-          </div>
+        <div className="!mx-2.5 !my-6 border-t border-slate-200" />
 
-          {/* SYSTEM LABEL */}
-          <div className="px-5 pb-2">
-            <p
-              className="
-                text-[10px]
-                font-bold
-                uppercase
-                tracking-[0.16em]
-                text-[#969BA3]
-              "
-            >
-              System
-            </p>
-          </div>
+        <p className="!mb-3 !px-4 text-xs font-semibold tracking-[0.25em] text-slate-500">
+          SYSTEM
+        </p>
 
-          {/* HELP */}
-          <button
-            type="button"
-            className="
-              group
-              flex
-              items-center
-              gap-4
-              w-full
-              rounded-xl
-              px-5
-              py-4
-              text-left
-              text-[#343941]
-              transition-all
-              duration-200
-              hover:bg-[#FFF5EC]
-              hover:text-[#F26B00]
-            "
-          >
-            <Headphones
-              size={20}
-              strokeWidth={1.9}
-              className="shrink-0"
-            />
+        <ul className="flex flex-col gap-1.5">
+          {systemMenu.map(({ id, label, icon: Icon }) => (
+            <li key={id}>
+              <button
+                type="button"
+                onClick={() => handleClick(id)}
+                className={`${itemBase} text-slate-700 hover:bg-slate-50`}
+              >
+                <Icon className="h-6 w-6 shrink-0 text-slate-800" strokeWidth={1.8} />
+                <span className="flex-1">{label}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
-            <span className="flex-1 text-[14px] font-medium">
-              Help & Support
-            </span>
-
-            <span
-              className="
-                text-[#A4A9B0]
-                transition-transform
-                group-hover:translate-x-0.5
-                group-hover:text-[#F26B00]
-              "
-            >
-              ›
-            </span>
-          </button>
-
-          {/* LOGOUT */}
-          <button
-            type="button"
-            className="
-              group
-              flex
-              items-center
-              gap-4
-              w-full
-              rounded-xl
-              px-5
-              py-4
-              text-left
-              text-[#343941]
-              transition-all
-              duration-200
-              hover:bg-[#FFF2F1]
-              hover:text-[#D94B45]
-            "
-          >
-            <LogOut
-              size={20}
-              strokeWidth={1.9}
-              className="shrink-0"
-            />
-
-            <span className="flex-1 text-[14px] font-medium">
-              Logout
-            </span>
-
-            <span
-              className="
-                text-[#A4A9B0]
-                transition-transform
-                group-hover:translate-x-0.5
-                group-hover:text-[#D94B45]
-              "
-            >
-              ›
-            </span>
-          </button>
-        </nav>
-
-        {/* ===================================================
-            ADMIN PROFILE
-        ==================================================== */}
-        <div
-          className="
-            absolute
-            bottom-0
-            left-0
-            w-full
-            p-5
-            border-t
-            border-[#ECEDEF]
-            bg-[#FCFCFC]
-          "
+      {/* User card */}
+      <div className="border-t border-slate-200/70 !p-4 !pt-5">
+        <button
+          type="button"
+          className="flex w-full items-center gap-3.5 !rounded-2xl border border-slate-200 bg-white !p-3 text-left shadow-sm transition-colors hover:bg-slate-50"
         >
-          <button
-            type="button"
-            className="
-              w-full
-              flex
-              items-center
-              gap-3
-              rounded-xl
-              border
-              border-[#E5E7EA]
-              bg-white
-              px-3
-              py-3
-              text-left
-              transition-all
-              duration-200
-              hover:border-[#FFD1AE]
-              hover:shadow-[0_4px_14px_rgba(242,107,0,0.06)]
-            "
-          >
-
-            {/* Avatar */}
-            <div
-              className="
-                flex
-                h-10
-                w-10
-                shrink-0
-                items-center
-                justify-center
-                rounded-lg
-                bg-[#FFF0E3]
-                text-[#F26B00]
-              "
-            >
-              <UserRound
-                size={20}
-                strokeWidth={1.9}
-              />
-            </div>
-
-            {/* User */}
-            <div className="min-w-0 flex-1">
-              <p
-                className="
-                  truncate
-                  text-[13px]
-                  font-semibold
-                  text-[#252A31]
-                "
-              >
-                Administrator
-              </p>
-
-              <p
-                className="
-                  mt-0.5
-                  text-[11px]
-                  text-[#8B9199]
-                "
-              >
-                System Admin
-              </p>
-            </div>
-
-            <span className="text-[#A4A9B0]">
-              ›
-            </span>
-
-          </button>
-        </div>
-      </aside>
-    </>
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center !rounded-xl bg-orange-50">
+            <User className="h-6 w-6 text-orange-600" strokeWidth={1.8} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-base font-semibold text-slate-900">{userName}</p>
+            <p className="truncate text-sm text-slate-500">{userRole}</p>
+          </div>
+          <ChevronRight className="h-5 w-5 shrink-0 text-slate-400" />
+        </button>
+      </div>
+    </aside>
   );
-}
+};
 
 export default Sidebar;
