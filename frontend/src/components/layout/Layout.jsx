@@ -6,20 +6,33 @@ function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[#F6F7F9]">
+    <div className="min-h-screen bg-[#F6F7F9]">
+
+      {/* ==================================================
+          SIDEBAR
+      ================================================== */}
       <Sidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
       />
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
+      {/* ==================================================
+          MAIN APPLICATION
+      ================================================== */}
+      <div className="flex min-h-screen flex-col lg:ml-72">
 
-        <main className="flex-1 p-5 sm:p-6 lg:p-7">
-          <div className="mx-auto w-full max-w-[1600px]">
+        {/* HEADER */}
+        <Header
+          onMenuClick={() => setSidebarOpen(true)}
+        />
+
+        {/* CONTENT */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          <div className="w-full">
             {children}
           </div>
         </main>
+
       </div>
     </div>
   );
