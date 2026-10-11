@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import {
   LayoutGrid,
   Package,
@@ -14,48 +14,26 @@ import {
 import divyadipLogo from "../../assets/images/divyadip-logo.jpeg";
 
 const mainMenu = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutGrid },
-  { id: "stock", label: "Stock Details", icon: Package },
-  { id: "challan", label: "Challan", icon: FileText },
-  { id: "gst", label: "GST Billing", icon: ReceiptText },
-  { id: "reports", label: "Reports", icon: ChartNoAxesColumn },
-  { id: "settings", label: "Settings", icon: Settings },
-];
-
-const systemMenu = [
-  { id: "help", label: "Help & Support", icon: Headphones },
-  { id: "logout", label: "Logout", icon: LogOut },
+  { to: "/", label: "Dashboard", icon: LayoutGrid, end: true },
+  { to: "/stock", label: "Stock Details", icon: Package },
+  { to: "/challan", label: "Challan", icon: FileText },
+  { to: "/gst-billing", label: "GST Billing", icon: ReceiptText },
+  { to: "/reports", label: "Reports", icon: ChartNoAxesColumn },
+  { to: "/settings", label: "Settings", icon: Settings },
 ];
 
 /*
   NOTE: spacing classes use the "!" (important) prefix so they still apply
-  even if your project has a global reset like `* { margin:0; padding:0 }`
-  in index.css / App.css (which overrides Tailwind v4 utilities).
+  even if your project has a global reset like `* { margin:0; padding:0 }`.
 */
-const Sidebar = ({
-  active: activeProp,
-  onNavigate,
-  onLogout,
-  userName = "Administrator",
-  userRole = "System Admin",
-}) => {
-  const [activeState, setActiveState] = useState("dashboard");
-  const active = activeProp ?? activeState;
+const itemBase =
+  "flex w-full items-center gap-4 !rounded-2xl !px-3.5 !py-3 text-left text-[17px] transition-all duration-200";
 
-  const handleClick = (id) => {
-    if (id === "logout") return onLogout?.();
-    setActiveState(id);
-    onNavigate?.(id);
-  };
-
-  const itemBase =
-    "flex w-full items-center gap-4 !rounded-2xl !px-3.5 !py-3 text-left text-[17px] transition-all duration-200";
-
+const Sidebar = ({ onLogout, userName = "Administrator", userRole = "System Admin" }) => {
   return (
     <aside className="flex h-screen w-72 shrink-0 flex-col border-r border-slate-200/70 bg-white">
       {/* Logo */}
       <div className="flex flex-col items-center !px-6 !pb-5 !pt-8">
-        {/* wrapper + scale crops the grey border baked into the JPEG */}
         <div className="w-44 overflow-hidden">
           <img
             src={divyadipLogo}
@@ -81,33 +59,36 @@ const Sidebar = ({
         </p>
 
         <ul className="flex flex-col gap-1.5">
-          {mainMenu.map(({ id, label, icon: Icon }) => {
-            const isActive = active === id;
-            return (
-              <li key={id}>
-                <button
-                  type="button"
-                  onClick={() => handleClick(id)}
-                  className={`${itemBase} ${
+          {mainMenu.map(({ to, label, icon: Icon, end }) => (
+            <li key={to}>
+              <NavLink
+                to={to}
+                end={end}
+                className={({ isActive }) =>
+                  `${itemBase} ${
                     isActive
                       ? "bg-orange-600 font-medium text-white shadow-lg shadow-orange-500/30"
                       : "text-slate-700 hover:bg-slate-50"
-                  }`}
-                >
-                  <Icon
-                    className={`h-6 w-6 shrink-0 ${
-                      isActive ? "text-white" : "text-slate-800"
-                    }`}
-                    strokeWidth={1.8}
-                  />
-                  <span className="flex-1">{label}</span>
-                  {isActive && (
-                    <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.2} />
-                  )}
-                </button>
-              </li>
-            );
-          })}
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon
+                      className={`h-6 w-6 shrink-0 ${
+                        isActive ? "text-white" : "text-slate-800"
+                      }`}
+                      strokeWidth={1.8}
+                    />
+                    <span className="flex-1">{label}</span>
+                    {isActive && (
+                      <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.2} />
+                    )}
+                  </>
+                )}
+              </NavLink>
+            </li>
+          ))}
         </ul>
 
         <div className="!mx-2.5 !my-6 border-t border-slate-200" />
@@ -117,18 +98,38 @@ const Sidebar = ({
         </p>
 
         <ul className="flex flex-col gap-1.5">
-          {systemMenu.map(({ id, label, icon: Icon }) => (
-            <li key={id}>
-              <button
-                type="button"
-                onClick={() => handleClick(id)}
-                className={`${itemBase} text-slate-700 hover:bg-slate-50`}
-              >
-                <Icon className="h-6 w-6 shrink-0 text-slate-800" strokeWidth={1.8} />
-                <span className="flex-1">{label}</span>
-              </button>
-            </li>
-          ))}
+          <li>
+            <NavLink
+              to="/help"
+              className={({ isActive }) =>
+                `${itemBase} ${
+                  isActive
+                    ? "bg-orange-600 font-medium text-white shadow-lg shadow-orange-500/30"
+                    : "text-slate-700 hover:bg-slate-50"
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <Headphones
+                    className={`h-6 w-6 shrink-0 ${isActive ? "text-white" : "text-slate-800"}`}
+                    strokeWidth={1.8}
+                  />
+                  <span className="flex-1">Help & Support</span>
+                </>
+              )}
+            </NavLink>
+          </li>
+          <li>
+            <button
+              type="button"
+              onClick={onLogout}
+              className={`${itemBase} text-slate-700 hover:bg-slate-50`}
+            >
+              <LogOut className="h-6 w-6 shrink-0 text-slate-800" strokeWidth={1.8} />
+              <span className="flex-1">Logout</span>
+            </button>
+          </li>
         </ul>
       </nav>
 
