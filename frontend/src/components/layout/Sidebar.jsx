@@ -4,6 +4,7 @@ import {
   Package,
   FileText,
   ReceiptText,
+  ShoppingCart,
   ChartNoAxesColumn,
   Settings,
   Headphones,
@@ -18,6 +19,7 @@ const mainMenu = [
   { to: "/stock", label: "Stock Details", icon: Package },
   { to: "/challan", label: "Challan", icon: FileText },
   { to: "/gst-billing", label: "GST Billing", icon: ReceiptText },
+  { to: "/purchases", label: "Purchase Details", icon: ShoppingCart, adminOnly: true },
   { to: "/reports", label: "Reports", icon: ChartNoAxesColumn },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
@@ -29,7 +31,7 @@ const mainMenu = [
 const itemBase =
   "flex w-full items-center gap-4 !rounded-2xl !px-3.5 !py-3 text-left text-[17px] transition-all duration-200";
 
-const Sidebar = ({ onLogout, userName = "Administrator", userRole = "System Admin" }) => {
+const Sidebar = ({ onLogout, isAdmin = false, userName = "Administrator", userRole = "System Admin" }) => {
   return (
     <aside className="flex h-screen w-72 shrink-0 flex-col border-r border-slate-200/70 bg-white">
       {/* Logo */}
@@ -59,7 +61,9 @@ const Sidebar = ({ onLogout, userName = "Administrator", userRole = "System Admi
         </p>
 
         <ul className="flex flex-col gap-1.5">
-          {mainMenu.map(({ to, label, icon: Icon, end }) => (
+          {mainMenu
+            .filter((item) => !item.adminOnly || isAdmin)
+            .map(({ to, label, icon: Icon, end }) => (
             <li key={to}>
               <NavLink
                 to={to}

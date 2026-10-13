@@ -1,7 +1,12 @@
 import { Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 import MainLayout from "./components/layout/MainLayout";
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import StockDetails from "./pages/StockDetails";
+import Settings from "./pages/Settings";
+import Purchases from "./pages/Purchases";
+import Challan from "./pages/Challan";
 
 // Temporary page for sections that are not built yet.
 const ComingSoon = ({ title }) => (
@@ -14,15 +19,22 @@ const ComingSoon = ({ title }) => (
 const App = () => {
   return (
     <Routes>
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/stock" element={<StockDetails />} />
-        <Route path="/challan" element={<ComingSoon title="Challan" />} />
-        <Route path="/gst-billing" element={<ComingSoon title="GST Billing" />} />
-        <Route path="/reports" element={<ComingSoon title="Reports" />} />
-        <Route path="/settings" element={<ComingSoon title="Settings" />} />
-        <Route path="/help" element={<ComingSoon title="Help & Support" />} />
-        <Route path="*" element={<ComingSoon title="Page not found" />} />
+      {/* Public */}
+      <Route path="/login" element={<Login />} />
+
+      {/* Everything inside here needs a login */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/stock" element={<StockDetails />} />
+          <Route path="/challan" element={<Challan />} />
+          <Route path="/purchases" element={<Purchases />} />
+          <Route path="/gst-billing" element={<ComingSoon title="GST Billing" />} />
+          <Route path="/reports" element={<ComingSoon title="Reports" />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/help" element={<ComingSoon title="Help & Support" />} />
+          <Route path="*" element={<ComingSoon title="Page not found" />} />
+        </Route>
       </Route>
     </Routes>
   );
