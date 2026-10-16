@@ -71,6 +71,30 @@ export const api = {
   updateChallan: (id, formData) => request(`/challans/${id}`, { method: "PUT", body: formData }),
   deleteChallan: (id) => request(`/challans/${id}`, { method: "DELETE" }),
 
+  // GST billing
+  getGstSettings: () => request("/gst/settings"),
+  saveGstSettings: (body) => request("/gst/settings", json("PUT", body)),
+  getCustomers: () => request("/gst/customers"),
+  createCustomer: (body) => request("/gst/customers", json("POST", body)),
+  updateCustomer: (id, body) => request(`/gst/customers/${id}`, json("PUT", body)),
+  deleteCustomer: (id) => request(`/gst/customers/${id}`, { method: "DELETE" }),
+  getInvoices: (params = {}) => {
+    const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v)).toString();
+    return request(`/gst/invoices${q ? `?${q}` : ""}`);
+  },
+  getInvoice: (id) => request(`/gst/invoices/${id}`),
+  nextInvoiceNo: (date) => request(`/gst/invoices/next-number?date=${date}`),
+  createInvoice: (body) => request("/gst/invoices", json("POST", body)),
+  cancelInvoice: (id, reason) => request(`/gst/invoices/${id}/cancel`, json("POST", { reason })),
+
+  // GST: bills received from suppliers, and the monthly summary
+  getReceivedBills: (month) => request(`/gst/received${month ? `?month=${month}` : ""}`),
+  getSuppliers: () => request("/gst/received/suppliers"),
+  createReceivedBill: (formData) => request("/gst/received", { method: "POST", body: formData }),
+  updateReceivedBill: (id, formData) => request(`/gst/received/${id}`, { method: "PUT", body: formData }),
+  deleteReceivedBill: (id) => request(`/gst/received/${id}`, { method: "DELETE" }),
+  getGstSummary: (month) => request(`/gst/summary?month=${month}`),
+
   // dashboard
   getSummary: () => request("/dashboard/summary"),
   getMonthly: () => request("/dashboard/monthly"),

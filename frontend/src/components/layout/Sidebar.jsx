@@ -18,7 +18,7 @@ const mainMenu = [
   { to: "/", label: "Dashboard", icon: LayoutGrid, end: true },
   { to: "/stock", label: "Stock Details", icon: Package },
   { to: "/challan", label: "Challan", icon: FileText },
-  { to: "/gst-billing", label: "GST Billing", icon: ReceiptText },
+  { to: "/gst-billing", label: "GST Billing", icon: ReceiptText, adminOnly: true },
   { to: "/purchases", label: "Purchase Details", icon: ShoppingCart, adminOnly: true },
   { to: "/reports", label: "Reports", icon: ChartNoAxesColumn },
   { to: "/settings", label: "Settings", icon: Settings },

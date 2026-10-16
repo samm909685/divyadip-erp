@@ -14,6 +14,8 @@ const completionsRoutes = require("./routes/completions");
 const dashboardRoutes = require("./routes/dashboard");
 const purchasesRoutes = require("./routes/purchases");
 const challansRoutes = require("./routes/challans");
+const gstRoutes = require("./routes/gst");
+const gstReceivedRoutes = require("./routes/gstReceived");
 
 // Refuse to start without a strong secret: a weak one lets attackers forge logins.
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
@@ -64,6 +66,8 @@ app.use("/api", completionsRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/purchases", purchasesRoutes);
 app.use("/api/challans", challansRoutes);
+app.use("/api/gst", gstRoutes);
+app.use("/api/gst", gstReceivedRoutes);
 
 // Uploaded files are private too
 app.use("/uploads", requireAuth, express.static(path.join(__dirname, "uploads")));
