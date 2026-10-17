@@ -20,7 +20,7 @@ const mainMenu = [
   { to: "/challan", label: "Challan", icon: FileText },
   { to: "/gst-billing", label: "GST Billing", icon: ReceiptText, adminOnly: true },
   { to: "/purchases", label: "Purchase Details", icon: ShoppingCart, adminOnly: true },
-  { to: "/reports", label: "Reports", icon: ChartNoAxesColumn },
+  { to: "/reports", label: "Reports", icon: ChartNoAxesColumn, adminOnly: true },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 

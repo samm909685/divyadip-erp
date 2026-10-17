@@ -95,6 +95,25 @@ export const api = {
   deleteReceivedBill: (id) => request(`/gst/received/${id}`, { method: "DELETE" }),
   getGstSummary: (month) => request(`/gst/summary?month=${month}`),
 
+  // is the server and database working? (public, no login needed)
+  health: () => request("/health", { skipAuthEvent: true }),
+  backupStatus: () => request("/system/backup-status"),
+
+  // reports: cost sheets and business analysis
+  getCostRecords: (params = {}) => {
+    const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v)).toString();
+    return request(`/costs/records${q ? `?${q}` : ""}`);
+  },
+  getLastCostRecord: (job) => request(`/costs/records/last?job=${encodeURIComponent(job)}`),
+  getJobNames: () => request("/costs/job-names"),
+  createCostRecord: (body) => request("/costs/records", json("POST", body)),
+  updateCostRecord: (id, body) => request(`/costs/records/${id}`, json("PUT", body)),
+  deleteCostRecord: (id) => request(`/costs/records/${id}`, { method: "DELETE" }),
+  getAnalysis: (params = {}) => {
+    const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v)).toString();
+    return request(`/costs/analysis${q ? `?${q}` : ""}`);
+  },
+
   // dashboard
   getSummary: () => request("/dashboard/summary"),
   getMonthly: () => request("/dashboard/monthly"),

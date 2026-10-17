@@ -12,6 +12,8 @@ import InvoiceForm from "./pages/InvoiceForm";
 import InvoicePrint from "./pages/InvoicePrint";
 import ReceivedBills from "./pages/ReceivedBills";
 import GstSummary from "./pages/GstSummary";
+import Help from "./pages/Help";
+import Reports from "./pages/Reports";
 
 // Temporary page for sections that are not built yet.
 const ComingSoon = ({ title }) => (
@@ -41,9 +43,9 @@ const App = () => {
           <Route path="/gst-billing/new" element={<InvoiceForm />} />
           <Route path="/gst-billing/received" element={<ReceivedBills />} />
           <Route path="/gst-billing/summary" element={<GstSummary />} />
-          <Route path="/reports" element={<ComingSoon title="Reports" />} />
+          <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/help" element={<ComingSoon title="Help & Support" />} />
+          <Route path="/help" element={<Help />} />
           <Route path="*" element={<ComingSoon title="Page not found" />} />
         </Route>
       </Route>
